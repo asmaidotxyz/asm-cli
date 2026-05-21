@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_ENDPOINT } from "../constants"
 import type { Skill } from "../types";
-import { installSkill } from "../services/install";
+import { installSkill } from "../services";
 
 export const learnHandler = async (args: string) => {
   try {
