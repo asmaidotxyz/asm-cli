@@ -19,7 +19,6 @@ const checkAgentInstalled = async (agentPath: string) => {
 export const setup = async () => {
   intro("Agent Skills Manager — Setup");
 
-  // 1. Detect which agents are installed
   const detected: { key: string; name: string; agentFile: string }[] = [];
 
   for (const [key, config] of Object.entries(AGENT_CONFIG)) {
@@ -37,7 +36,6 @@ export const setup = async () => {
 
   log.info(`Detected agents: ${detected.map((d) => d.name).join(", ")}`);
 
-  // 2. Ask user to confirm which agents to set up
   const selected = await multiselect({
     message: "Which agents would you like to set up? (space to select, enter to confirm)",
     options: detected.map((d) => ({
@@ -56,20 +54,16 @@ export const setup = async () => {
     return;
   }
 
-  // 3. Read instruction content
   const instruction = await readFile(INSTRUCTION_PATH, "utf-8");
 
-  // 4. For each selected agent, check if instruction already exists and append if not
   for (const key of selected) {
     const config = AGENT_CONFIG[key];
     if (!config) continue;
     const agentFilePath = `${process.env.HOME}/${config.agentFile}`;
 
     try {
-      // Ensure directory exists
       await mkdir(dirname(agentFilePath), { recursive: true });
 
-      // Read existing content (or empty if file doesn't exist)
       let existingContent = "";
       try {
         existingContent = await Bun.file(agentFilePath).text();
@@ -77,13 +71,11 @@ export const setup = async () => {
         // file doesn't exist yet
       }
 
-      // Check if instruction is already present
       if (existingContent.includes(instruction.trim())) {
         log.info(`${config.name}: already configured, skipping.`);
         continue;
       }
 
-      // Append instruction to end of file
       const separator = existingContent.length > 0 && !existingContent.endsWith("\n") ? "\n\n" : existingContent.length > 0 ? "\n" : "";
       await appendFile(agentFilePath, separator + instruction);
       log.success(`${config.name}: instructions written to ~/${config.agentFile}`);
