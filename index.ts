@@ -1,6 +1,6 @@
 import { program } from 'commander';
 import { VERSION } from './constants';
-import { installHandler } from './handlers';
+import { learnHandler } from './handlers';
 
 program.
   name('my-cli')
@@ -10,6 +10,6 @@ program.
 program.command('learn')
   .description('Learn something new')
   .argument('<param>', 'topic to learn about')
-  .action(installHandler);
+  .action(learnHandler);
 
 program.parse()

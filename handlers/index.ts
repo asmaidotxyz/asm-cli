@@ -1,1 +1,1 @@
-export * from "./install.handler.ts"
+export * from "./learn.handler.ts"
