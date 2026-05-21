@@ -11,11 +11,10 @@ export const learnHandler = async (args: string) => {
         query: args
       }
     });
-
     const skill: Skill = res.data.data;
     // install skill
     await installSkill(skill);
-
+    console.log(`Successfully learned ${args}, call skill tool with name ${skill.name} to use it`);
   } catch (error) {
     console.log("Skill not found, try finish task with your own knowledge or search for another skill");
   }
