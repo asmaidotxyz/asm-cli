@@ -1,0 +1,33 @@
+{
+  "name": "asm",
+  "module": "index.ts",
+  "author": "Duc Huy <imduchuyyy@gmail.com>",
+  "description": "The CLI for agent to manage their skills.",
+  "homepage": "https://github.com/asmaidotxyz/asm-cli",
+  "license": "MIT",
+  "type": "module",
+  "private": true,
+  "keywords": [
+    "asm",
+    "ai",
+    "agent",
+    "skills",
+    "cli"
+  ],
+  "scripts": {
+    "build": "bun build ./index.ts --compile --outfile build/asm",
+    "dev": "bun run build --watch"
+  },
+  "bin": {
+    "asm": "./build/asm"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  }
+}
