@@ -1,4 +1,4 @@
-import { checkbox } from "@inquirer/prompts";
+import { multiselect, intro, outro, log, isCancel } from "@clack/prompts";
 import { AGENT_CONFIG } from "../constants";
 import { join } from "path";
 import { readFile, appendFile, mkdir, readdir } from "fs/promises";
@@ -17,7 +17,7 @@ const checkAgentInstalled = async (agentPath: string) => {
 };
 
 export const setup = async () => {
-  console.log("\n🔧 Agent Skills Manager — Setup\n");
+  intro("Agent Skills Manager — Setup");
 
   // 1. Detect which agents are installed
   const detected: { key: string; name: string; agentFile: string }[] = [];
@@ -30,24 +30,29 @@ export const setup = async () => {
   }
 
   if (detected.length === 0) {
-    console.log("⚠️  No supported agents detected on this machine.");
+    log.warning("No supported agents detected on this machine.");
+    outro("Nothing to set up.");
     return;
   }
 
-  console.log(`Detected agents: ${detected.map((d) => d.name).join(", ")}\n`);
+  log.info(`Detected agents: ${detected.map((d) => d.name).join(", ")}`);
 
   // 2. Ask user to confirm which agents to set up
-  const selected = await checkbox({
-    message: "Which agents would you like to set up?",
-    choices: detected.map((d) => ({
+  const selected = await multiselect({
+    message: "Which agents would you like to set up? (space to select, enter to confirm)",
+    options: detected.map((d) => ({
       value: d.key,
-      name: d.name,
-      checked: true,
+      label: d.name,
     })),
   });
 
+  if (isCancel(selected)) {
+    outro("Setup cancelled.");
+    return;
+  }
+
   if (selected.length === 0) {
-    console.log("\nNo agents selected. Setup cancelled.");
+    outro("No agents selected.");
     return;
   }
 
@@ -74,18 +79,18 @@ export const setup = async () => {
 
       // Check if instruction is already present
       if (existingContent.includes(instruction.trim())) {
-        console.log(`  ℹ ${config.name}: already configured, skipping.`);
+        log.info(`${config.name}: already configured, skipping.`);
         continue;
       }
 
       // Append instruction to end of file
       const separator = existingContent.length > 0 && !existingContent.endsWith("\n") ? "\n\n" : existingContent.length > 0 ? "\n" : "";
       await appendFile(agentFilePath, separator + instruction);
-      console.log(`  ✓ ${config.name}: instructions written to ~/${config.agentFile}`);
+      log.success(`${config.name}: instructions written to ~/${config.agentFile}`);
     } catch (err) {
-      console.error(`  ✗ ${config.name}: failed to write — ${err}`);
+      log.error(`${config.name}: failed to write — ${err}`);
     }
   }
 
-  console.log("\n✅ Setup complete!\n");
+  outro("Setup complete!");
 };
