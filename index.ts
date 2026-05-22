@@ -1,9 +1,9 @@
 import { program } from 'commander';
 import { VERSION } from './constants';
-import { learnHandler, setupHandler } from './handlers';
+import { searchHandler, setupHandler, installHandler } from './handlers';
 
 program.
-  name('my-cli')
+  name('aiasm')
   .description('A simple CLI tool')
   .version(VERSION);
 
@@ -11,10 +11,15 @@ program.command('setup')
   .description('Set up Agent Skill Management')
   .action(setupHandler);
 
-program.command('learn')
-  .description('Learn something new')
-  .argument('<param>', 'topic to learn about')
-  .action(learnHandler);
+program.command('search')
+  .description('Search skill matches for a given topic')
+  .argument('<param>', 'keywords')
+  .action(searchHandler);
+
+program.command('install')
+  .description('Install a skill by name')
+  .argument('<param>', 'skill name')
+  .action(installHandler);
 
 
 program.parse()
