@@ -9,6 +9,13 @@ Supports **OpenCode**, **Claude Code**, **Codex**, **Cursor**.
 <!-- agent-list:end -->
 
 
+## Installation
+
+```bash
+npm install -g aiasm
+```
+
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=asmaidotxyz%2Fasm-cli&type=date&legend=top-left">
