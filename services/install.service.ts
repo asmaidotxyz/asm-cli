@@ -46,9 +46,9 @@ const isGitAvailable = async () => {
   }
 };
 
-const installViaGit = async (skill: Skill, destDir: string) => {
+const installViaGit = async (name: string, source: string, destDir: string) => {
   const tempDir = join(tmpdir(), `asm-${Date.now()}`);
-  const repoUrl = `https://github.com/${skill.source}.git`;
+  const repoUrl = `https://github.com/${source}.git`;
 
   try {
     const proc = Bun.spawn(["git", "clone", "--depth", "1", repoUrl, tempDir], {
@@ -57,8 +57,8 @@ const installViaGit = async (skill: Skill, destDir: string) => {
     });
     if ((await proc.exited) !== 0) throw new Error(`Failed to clone ${repoUrl}`);
 
-    const skillFolder = await findSkillFolder(tempDir, skill.name);
-    if (!skillFolder) throw new Error(`Skill "${skill.name}" not found`);
+    const skillFolder = await findSkillFolder(tempDir, name);
+    if (!skillFolder) throw new Error(`Skill "${name}" not found`);
 
     await rm(destDir, { recursive: true, force: true });
     await mkdir(destDir, { recursive: true });
@@ -68,13 +68,13 @@ const installViaGit = async (skill: Skill, destDir: string) => {
   }
 };
 
-const installViaApi = async (skill: Skill, destDir: string) => {
+const installViaApi = async (name: string, source: string, destDir: string) => {
   const branches = ["main", "master"];
   let tree: { path: string; type: string }[] = [];
   let branch = "";
 
   for (const b of branches) {
-    const url = `https://api.github.com/repos/${skill.source}/git/trees/${b}?recursive=1`;
+    const url = `https://api.github.com/repos/${source}/git/trees/${b}?recursive=1`;
     const res = await fetch(url, {
       headers: { Accept: "application/vnd.github.v3+json", "User-Agent": "asm-cli" },
     });
@@ -86,7 +86,7 @@ const installViaApi = async (skill: Skill, destDir: string) => {
     }
   }
 
-  if (!branch) throw new Error(`Failed to fetch repo tree for ${skill.source}`);
+  if (!branch) throw new Error(`Failed to fetch repo tree for ${source}`);
 
   // find SKILL.md that matches skill.name
   const skillMdPaths = tree
@@ -96,19 +96,19 @@ const installViaApi = async (skill: Skill, destDir: string) => {
   let matchedDir: string | null = null;
 
   for (const mdPath of skillMdPaths) {
-    const rawUrl = `https://raw.githubusercontent.com/${skill.source}/${branch}/${mdPath}`;
+    const rawUrl = `https://raw.githubusercontent.com/${source}/${branch}/${mdPath}`;
     const res = await fetch(rawUrl);
     if (!res.ok) continue;
 
-    const name = parseName(await res.text());
-    if (name?.toLowerCase() === skill.name.toLowerCase()) {
+    const skillName = parseName(await res.text());
+    if (skillName?.toLowerCase() === name.toLowerCase()) {
       const parts = mdPath.split("/");
       matchedDir = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
       break;
     }
   }
 
-  if (matchedDir === null) throw new Error(`Skill "${skill.name}" not found`);
+  if (matchedDir === null) throw new Error(`Skill "${name}" not found`);
 
   // fetch and write all files under matched dir
   const prefix = matchedDir ? `${matchedDir}/` : "";
@@ -120,7 +120,7 @@ const installViaApi = async (skill: Skill, destDir: string) => {
   await mkdir(destDir, { recursive: true });
 
   for (const file of files) {
-    const res = await fetch(`https://raw.githubusercontent.com/${skill.source}/${branch}/${file.path}`);
+    const res = await fetch(`https://raw.githubusercontent.com/${source}/${branch}/${file.path}`);
     if (!res.ok) continue;
 
     const relativePath = matchedDir ? file.path.slice(prefix.length) : file.path;
@@ -132,12 +132,12 @@ const installViaApi = async (skill: Skill, destDir: string) => {
   }
 };
 
-export const installSkill = async (skill: Skill) => {
-  const destDir = join(process.cwd(), SKILLS_DIR, sanitizeName(skill.name));
+export const installSkill = async (name: string, source: string) => {
+  const destDir = join(process.cwd(), SKILLS_DIR, sanitizeName(name));
 
   if (await isGitAvailable()) {
-    await installViaGit(skill, destDir);
+    await installViaGit(name, source, destDir);
   } else {
-    await installViaApi(skill, destDir);
+    await installViaApi(name, source, destDir);
   }
 };

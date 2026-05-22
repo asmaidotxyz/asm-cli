@@ -1,7 +1,7 @@
 import packageJson from "../package.json";
 
 export const VERSION = packageJson.version;
-export const API_ENDPOINT = process.env.ASM_API_ENDPOINT || "https://asmai.xyz/api";
+export const API_ENDPOINT = process.env.ASM_API_ENDPOINT || "https://aiasm.xyz";
 
 export const AGENT_CONFIG: Record<string, { name: string; path: string; agentFile: string }> = {
   opencode: {

@@ -33,7 +33,8 @@ const main = async () => {
 
   program.command('install')
     .description('Install a skill by name')
-    .argument('<param>', 'skill name')
+    .argument('<name>', 'skill name')
+    .argument('<source>', 'skill source')
     .action(installHandler);
 
 
