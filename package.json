@@ -16,7 +16,8 @@
     "cli"
   ],
   "scripts": {
-    "build": "bun build ./index.ts --compile --outfile build/asm",
+    "build": "rm -rf build && bun build ./index.ts --compile --outfile build/asm && cp package.json build/",
+    "prepare": "bun run build",
     "dev": "bun run build --watch"
   },
   "bin": {
