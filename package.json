@@ -5,7 +5,7 @@
   "author": "Duc Huy <imduchuyyy@gmail.com>",
   "description": "The CLI for agent to manage their skills.",
   "homepage": "https://github.com/instructionai/aiasm",
-  "respository": {
+  "repository": {
     "type": "git",
     "url": "https://github.com/instructionai/aiasm"
   },
