@@ -1,10 +1,10 @@
 {
   "name": "aiasm",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "module": "index.ts",
   "author": "Duc Huy <imduchuyyy@gmail.com>",
   "description": "The CLI for agent to manage their skills.",
-  "homepage": "https://github.com/asmaidotxyz/asm-cli",
+  "homepage": "https://github.com/instructionai/aiasm",
   "license": "MIT",
   "type": "module",
   "private": false,
