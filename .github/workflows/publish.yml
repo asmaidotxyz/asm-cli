@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:
@@ -30,23 +30,12 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
-      - name: Commit package version
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git commit -m "chore: release ${GITHUB_REF_NAME#v}" || exit 0
-          git push origin HEAD:main
-
       - run: bun run build
 
-      - name: Prepare build package for npm
-        run: |
-          npm pkg set version="${GITHUB_REF_NAME#v}" --prefix build
-          npm pkg set bin.asm="asm" --prefix build
-          npm pkg delete scripts --prefix build
+      - name: Verify package contents
+        run: npm pack --dry-run
 
-      - name: Publish build folder
-        run: npm publish ./build --provenance --access public
+      - name: Publish package
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
