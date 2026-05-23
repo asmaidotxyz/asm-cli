@@ -1,6 +1,6 @@
 {
   "name": "aiasm",
-  "version": "0.1.5",
+  "version": "0.1.7",
   "module": "index.ts",
   "author": "Duc Huy <imduchuyyy@gmail.com>",
   "description": "The CLI for agent to manage their skills.",
