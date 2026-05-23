@@ -2,6 +2,7 @@ import type { Skill } from "../types";
 import { mkdir, rm, cp, readdir, readFile, writeFile } from "fs/promises";
 import { join, dirname } from "path";
 import { tmpdir } from "os";
+import { spawn } from "child_process";
 
 const SKILLS_DIR = ".agents/skills";
 const SKIP_DIRS = ["node_modules", ".git", "dist", "build"];
@@ -37,13 +38,16 @@ const findSkillFolder = async (dir: string, skillName: string): Promise<string |
   return null;
 };
 
+const runCommand = async (command: string, args: string[]) =>
+  new Promise<number>((resolve) => {
+    const proc = spawn(command, args, { stdio: "ignore" });
+
+    proc.on("error", () => resolve(1));
+    proc.on("close", (code) => resolve(code ?? 1));
+  });
+
 const isGitAvailable = async () => {
-  try {
-    const proc = Bun.spawn(["git", "--version"], { stdout: "ignore", stderr: "ignore" });
-    return (await proc.exited) === 0;
-  } catch {
-    return false;
-  }
+  return (await runCommand("git", ["--version"])) === 0;
 };
 
 const installViaGit = async (name: string, source: string, destDir: string) => {
@@ -51,11 +55,9 @@ const installViaGit = async (name: string, source: string, destDir: string) => {
   const repoUrl = `https://github.com/${source}.git`;
 
   try {
-    const proc = Bun.spawn(["git", "clone", "--depth", "1", repoUrl, tempDir], {
-      stdout: "ignore",
-      stderr: "ignore",
-    });
-    if ((await proc.exited) !== 0) throw new Error(`Failed to clone ${repoUrl}`);
+    if ((await runCommand("git", ["clone", "--depth", "1", repoUrl, tempDir])) !== 0) {
+      throw new Error(`Failed to clone ${repoUrl}`);
+    }
 
     const skillFolder = await findSkillFolder(tempDir, name);
     if (!skillFolder) throw new Error(`Skill "${name}" not found`);

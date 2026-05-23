@@ -1,15 +1,15 @@
 import { multiselect, intro, outro, log, isCancel } from "@clack/prompts";
 import { AGENT_CONFIG } from "../constants";
-import { join } from "path";
 import { readFile, appendFile, mkdir, readdir } from "fs/promises";
-import { dirname } from "path";
+import { dirname, join } from "path";
+import { homedir } from "os";
+import { fileURLToPath } from "url";
 
-const INSTRUCTION_PATH = join(import.meta.dir, "../INSTRUCTION.md");
+const INSTRUCTION_PATH = join(dirname(fileURLToPath(import.meta.url)), "../INSTRUCTION.md");
 
 const checkAgentInstalled = async (agentPath: string) => {
   try {
-    const path = `${process.env.HOME}/${agentPath}`;
-    await readdir(path);
+    await readdir(join(homedir(), agentPath));
     return true;
   } catch (e) {
     return false;
@@ -59,14 +59,14 @@ export const setup = async () => {
   for (const key of selected) {
     const config = AGENT_CONFIG[key];
     if (!config) continue;
-    const agentFilePath = `${process.env.HOME}/${config.agentFile}`;
+    const agentFilePath = join(homedir(), config.agentFile);
 
     try {
       await mkdir(dirname(agentFilePath), { recursive: true });
 
       let existingContent = "";
       try {
-        existingContent = await Bun.file(agentFilePath).text();
+        existingContent = await readFile(agentFilePath, "utf-8");
       } catch {
         // file doesn't exist yet
       }

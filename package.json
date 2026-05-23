@@ -20,22 +20,27 @@
     "cli"
   ],
   "scripts": {
-    "build": "rm -rf build && bun build ./index.ts --compile --outfile build/asm && cp package.json build/",
-    "prepare": "bun run build",
+    "build": "rm -rf dist && bun build ./index.ts --target node --outfile dist/cli.js",
+    "prepack": "bun run build && chmod +x bin/aiasm.js",
     "dev": "bun run build --watch"
   },
   "bin": {
-    "asm": "./asm"
+    "aiasm": "./bin/aiasm.js",
+    "asm": "./bin/aiasm.js"
   },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "INSTRUCTION.md",
+    "LICENSE",
+    "package.json"
+  ],
   "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
+    "@types/bun": "latest",
     "@clack/prompts": "^1.4.0",
     "axios": "^1.16.1",
-    "commander": "^14.0.3"
+    "commander": "^14.0.3",
+    "typescript": "^5"
   }
 }
