@@ -7,7 +7,7 @@ export const AGENT_CONFIG: Record<string, { name: string; path: string; agentFil
   opencode: {
     name: "OpenCode",
     path: ".opencode",
-    agentFile: ".opencode/AGENTS.md"
+    agentFile: ".config/opencode/AGENTS.md"
   },
   "claude-code": {
     name: "Claude Code",
