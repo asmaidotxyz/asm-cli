@@ -15,8 +15,6 @@ const checkNewVersion = async () => {
 };
 
 const main = async () => {
-  await checkNewVersion();
-
   program.
     name('aiasm')
     .description('A simple CLI tool')

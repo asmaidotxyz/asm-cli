@@ -4,10 +4,10 @@
   "module": "index.ts",
   "author": "Duc Huy <imduchuyyy@gmail.com>",
   "description": "The CLI for agent to manage their skills.",
-  "homepage": "https://github.com/instructionai/aiasm",
+  "homepage": "https://aiasm.xyz",
   "repository": {
     "type": "git",
-    "url": "https://github.com/instructionai/aiasm"
+    "url": "git+https://github.com/instructionai/aiasm.git"
   },
   "license": "MIT",
   "type": "module",
@@ -25,7 +25,7 @@
     "dev": "bun run build --watch"
   },
   "bin": {
-    "asm": "build/asm"
+    "asm": "./asm"
   },
   "devDependencies": {
     "@types/bun": "latest"
